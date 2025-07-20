@@ -35,6 +35,13 @@
     force: true
   when: download_required
 
+- name: Ensure file properties are set
+  ansible.builtin.file:
+    path: "{{ path }}"
+    mode: "{{ mode | default(omit) }}"
+    owner: "{{ owner | default(omit) }}"
+    group: "{{ group | default(omit) }}"
+
 - name: "Save state information for {{ path }}{{ download_required | ternary('', ' (not needed)') }}"  # noqa name[template]
   community.general.xattr:
     path: "{{ path }}"

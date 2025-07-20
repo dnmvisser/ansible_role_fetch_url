@@ -4,7 +4,7 @@ Fetch a URL and save the content to a file, but only if:
 
 - The file does not yet exist
 - The file exists, but the [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag)
-  header of the resource is different from the stored version.
+  header of the resource is different from the stored version
 
 This can save time and resources, for example when fetching large binary files.
 
