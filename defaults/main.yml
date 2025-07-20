@@ -1,2 +1,8 @@
 ---
-# defaults file for ansible-role-fetch-url
+# Which extended attributes to use for storing information
+fetch_url_xattr_etag_hash: user.etag_hash
+# https://www.freedesktop.org/wiki/CommonExtendedAttributes/
+fetch_url_xattr_url: user.xdg.origin.url
+
+# Which algo to use for the hashing
+fetch_url_hash_algo: sha256
