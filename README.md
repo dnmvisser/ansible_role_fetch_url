@@ -3,12 +3,13 @@
 Fetch a URL and save the content to a file, but only if:
 
 - The file does not yet exist
-- The [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag)
-  of the resouce has changed.
+- The file exists, but the [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag)
+  header of the resource is different from the stored version.
 
-This is accomplished by saving the `Etag` in an extended attribute on the
-downloaded file. This can save time and resources, for example when fetching
-large binary files.
+This can save time and resources, for example when fetching large binary files.
+
+To avoid having to maintain a separate table of file names to `ETag` values, we
+save the `Etag` in an extended attribute on the downloaded file.
 
 # Requirements
 
