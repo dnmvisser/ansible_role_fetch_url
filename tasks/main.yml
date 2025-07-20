@@ -1,0 +1,28 @@
+- name: Fetch information about URL through a HEAD request
+  ansible.builtin.uri:
+    url: "{{ url }}"
+  register: _url_info
+
+# - debug: var=_url_info
+- name: Fetch information about destination path
+  ansible.builtin.stat:
+    path: "{{ path }}"
+  register: _path_stat
+
+- name: Find out if a download is required
+  ansible.builtin.set_fact:
+    download_required: "{{
+      (not _path_stat.stat.exists) or
+      ('content_length' not in _url_info) or
+      (_path_stat.stat.exists and _path_stat.stat.size != _url_info.content_length | int)
+    }}"
+
+- name: "Fetch URL {{ download_required | ternary('', 'Not needed') }}"
+  ansible.builtin.get_url:
+    url: "{{ url }}"
+    dest: "{{ path }}"
+    mode: "{{ mode | default(omit) }}"
+    owner: "{{ owner | default(omit) }}"
+    group: "{{ group | default(omit) }}"
+    force: true
+  when: download_required
