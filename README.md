@@ -3,16 +3,18 @@
 Fetch a URL and save the content to a file, but only if:
 
 - The file does not yet exist
-- The [`E-Tag` header](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag)
-  on the resouces has changed
+- The [`ETag`](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/ETag)
+  of the resouce has changed.
 
-This is accomplished by saving the `E-tag` header value in an extended attribute
-on the downloaded file. This can save resources, for example when fetching large binaries etc.
+This is accomplished by saving the `Etag` in an extended attribute on the
+downloaded file. This can save time and resources, for example when fetching
+large binary files.
 
 # Requirements
 
 This role uses the
-[`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html) module, so it has [those
+[`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html)
+module, so it has [those
 requirements](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html#synopsis)
 as well.
 
@@ -26,9 +28,9 @@ as well.
 | `mode` |  | File mode |
 | `owner` | | File owner |
 | `group` |  | File group |
-| `fetch_url_xattr_etag_hash`| `user.etag_hash` | Extended attribute to store the hash of the `E-Tag` header value in |
+| `fetch_url_xattr_etag_hash`| `user.etag_hash` | Extended attribute to store the hash of the `ETag` in |
 | `fetch_url_xattr_url` | `user.xdg.origin.url` | For informational purpose, store the URL as an extended attribute. Per [recommendation](https://www.freedesktop.org/wiki/CommonExtendedAttributes/)) |
-| `fetch_url_hash_algo` | `sha256` | Hashing algorithm to use for hashing the `E-Tag` header value |
+| `fetch_url_hash_algo` | `sha256` | Hashing algorithm to use for hashing the `ETag` |
 
 
 # Example Playbook
@@ -49,4 +51,4 @@ as well.
 
 # BUGS
 
-The value of the `E-Tag` header contains double quotes. But the [`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html) module seems to have some problem with handling those. Therefore we store a hashed version instead.
+The `ETag` value contains double quotes, but the [`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html) module seems to have some problem with handling those. To avoid such problems, we store a hashed version of `ETag` instead.
