@@ -1,5 +1,6 @@
 # Created by https://www.toptal.com/developers/gitignore/api/ansible,python,vim,macos,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=ansible,python,vim,macos,visualstudiocode
+.ansible/*
 
 ### Ansible ###
 *.retry

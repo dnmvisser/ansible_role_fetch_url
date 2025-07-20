@@ -1,23 +1,31 @@
-- name: Fetch information about URL through a HEAD request
+---
+- name: "Fetch information for {{ url }}"
   ansible.builtin.uri:
     url: "{{ url }}"
+    method: HEAD
   register: _url_info
 
-# - debug: var=_url_info
-- name: Fetch information about destination path
+- name: "Fetch information for {{ path }}"
   ansible.builtin.stat:
     path: "{{ path }}"
-  register: _path_stat
+  register: _stat
+
+- name: "Fetch extended information for {{ path }}"
+  community.general.xattr:
+    path: "{{ path }}"
+  register: _xattr
+  when: _stat.stat.exists
 
 - name: Find out if a download is required
   ansible.builtin.set_fact:
     download_required: "{{
-      (not _path_stat.stat.exists) or
-      ('content_length' not in _url_info) or
-      (_path_stat.stat.exists and _path_stat.stat.size != _url_info.content_length | int)
-    }}"
+      (not _stat.stat.exists) or
+      ('etag' not in _url_info) or
+      (fetch_url_xattr_etag_hash not in _xattr.xattr) or
+      (_stat.stat.exists and _xattr.xattr[fetch_url_xattr_etag_hash] != _url_info.etag | hash(fetch_url_hash_algo))
+      }}"
 
-- name: "Fetch URL {{ download_required | ternary('', 'Not needed') }}"
+- name: "{{ download_required | ternary('Fetch file from ' ~ url, 'Download not needed') }}"
   ansible.builtin.get_url:
     url: "{{ url }}"
     dest: "{{ path }}"
@@ -25,4 +33,18 @@
     owner: "{{ owner | default(omit) }}"
     group: "{{ group | default(omit) }}"
     force: true
+  when: download_required
+
+- name: "Save state information for {{ path }}{{ download_required | ternary('', ' (not needed)') }}"  # noqa name[template]
+  community.general.xattr:
+    path: "{{ path }}"
+    key: "{{ item.key }}"
+    value: "{{ item.value }}"
+  loop:
+    - key: "{{ fetch_url_xattr_url }}"
+      value: "{{ url }}"
+    - key: "{{ fetch_url_xattr_etag_hash }}"
+      value: "{{ _url_info.etag | hash(fetch_url_hash_algo) }}"
+  loop_control:
+    label: "{{ item.value }}"
   when: download_required
