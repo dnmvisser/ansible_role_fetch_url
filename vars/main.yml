@@ -1,2 +1,3 @@
 ---
-# vars file for ansible-role-fetch-url
+# We start out with no changes
+fetch_url_is_changed: false
