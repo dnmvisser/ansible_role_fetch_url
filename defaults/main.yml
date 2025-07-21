@@ -1,8 +1,6 @@
 ---
-# Which extended attributes to use for storing information
-fetch_url_xattr_etag_hash: user.etag_hash
+# Which extended attribute to use for storing the ETag
+fetch_url_xattr_etag: user.etag
+
 # https://www.freedesktop.org/wiki/CommonExtendedAttributes/
 fetch_url_xattr_url: user.xdg.origin.url
-
-# Which algo to use for the hashing
-fetch_url_hash_algo: sha256

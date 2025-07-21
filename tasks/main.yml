@@ -21,8 +21,8 @@
     download_required: "{{
       (not _stat.stat.exists) or
       ('etag' not in _url_info) or
-      (fetch_url_xattr_etag_hash not in _xattr.xattr) or
-      (_stat.stat.exists and _xattr.xattr[fetch_url_xattr_etag_hash] != _url_info.etag | hash(fetch_url_hash_algo))
+      (fetch_url_xattr_etag not in _xattr.xattr) or
+      (_stat.stat.exists and _xattr.xattr[fetch_url_xattr_etag] != ('b64:' ~ _url_info.etag | b64encode))
       }}"
 
 - name: "{{ download_required | ternary('Fetch file from ' ~ url, 'Download not needed') }}"
@@ -34,6 +34,7 @@
     group: "{{ group | default(omit) }}"
     force: true
   when: download_required
+  register: _file_download
 
 - name: Ensure file properties are set
   ansible.builtin.file:
@@ -41,6 +42,7 @@
     mode: "{{ mode | default(omit) }}"
     owner: "{{ owner | default(omit) }}"
     group: "{{ group | default(omit) }}"
+  register: _file_properties
 
 - name: "Save state information for {{ path }}{{ download_required | ternary('', ' (not needed)') }}"  # noqa name[template]
   community.general.xattr:
@@ -50,8 +52,12 @@
   loop:
     - key: "{{ fetch_url_xattr_url }}"
       value: "{{ url }}"
-    - key: "{{ fetch_url_xattr_etag_hash }}"
-      value: "{{ _url_info.etag | hash(fetch_url_hash_algo) }}"
+    - key: "{{ fetch_url_xattr_etag }}"
+      value: "b64:{{ _url_info.etag | b64encode }}"
   loop_control:
-    label: "{{ item.value }}"
+    label: "{{ item.key }}={{ item.value }}"
   when: download_required
+
+- name: Set overall changed status
+  ansible.builtin.set_fact:
+    fetch_url_is_changed: "{{ (_file_download.changed or _file_properties.changed) }}"

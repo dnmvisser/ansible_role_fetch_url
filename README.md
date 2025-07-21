@@ -29,9 +29,8 @@ as well.
 | `mode` |  | File mode |
 | `owner` | | File owner |
 | `group` |  | File group |
-| `fetch_url_xattr_etag_hash`| `user.etag_hash` | Extended attribute to store the hash of the `ETag` in |
+| `fetch_url_xattr_etag`| `user.etag` | Extended attribute to store the `ETag` |
 | `fetch_url_xattr_url` | `user.xdg.origin.url` | For informational purpose, store the URL as an extended attribute. Per [recommendation](https://www.freedesktop.org/wiki/CommonExtendedAttributes/)) |
-| `fetch_url_hash_algo` | `sha256` | Hashing algorithm to use for hashing the `ETag` |
 
 
 # Example Playbook
@@ -52,4 +51,4 @@ as well.
 
 # BUGS
 
-The `ETag` value contains double quotes, but the [`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html) module seems to have some problem with handling those. To avoid such problems, we store a hashed version of `ETag` instead.
+The `ETag` value contains double quotes, but the [`community.general.xattr`](https://docs.ansible.com/ansible/latest/collections/community/general/xattr_module.html) module does not handle that correctly. To avoid problems, we store the base64 encoded value instead.
