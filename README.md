@@ -30,7 +30,7 @@ as well.
 | `owner` | | File owner |
 | `group` |  | File group |
 | `fetch_url_xattr_etag`| `user.etag` | Extended attribute to store the `ETag` |
-| `fetch_url_xattr_url` | `user.xdg.origin.url` | For informational purpose, store the URL as an extended attribute. Per [recommendation](https://www.freedesktop.org/wiki/CommonExtendedAttributes/)) |
+| `fetch_url_xattr_url` | `user.xdg.origin.url` | For informational purpose, store the URL as an extended attribute (per [recommendation](https://www.freedesktop.org/wiki/CommonExtendedAttributes/) |
 
 
 # Example Playbook
